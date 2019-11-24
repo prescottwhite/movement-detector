@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Movement Detector</string>
+
+    <!-- status -->
+    <string name="status_not_moved">Hasn\'t budged an inch</string>
+    <string name="status_moved">The phone was moved!</string>
+    
+    <!-- buttons -->
+    <string name="button_reset">Reset</string>
+    <string name="button_exit">Exit</string>
+</resources>
