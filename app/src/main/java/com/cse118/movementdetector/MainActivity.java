@@ -19,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
         mButtonReset = findViewById(R.id.AM_button_reset);
         mButtonExit = findViewById(R.id.AM_button_exit);
 
+        MovementService movementService = new MovementService();
+
         mButtonExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
