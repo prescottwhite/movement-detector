@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 
 import java.util.Date;
 
@@ -16,7 +17,7 @@ public class SensorListener implements SensorEventListener, Runnable {
     private Date timeZero;
     private Date timeMoved;
 
-    private final int TIME_WEIGHT = 5000;
+    private final int TIME_WAIT = 15000;
 
     private boolean isMoved;
 
@@ -40,6 +41,7 @@ public class SensorListener implements SensorEventListener, Runnable {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             if (((Math.abs(event.values[0]) - xInit) > 0.5) || ((Math.abs(event.values[1]) - yInit) > 0.5)) {
                 timeMoved = new Date();
+                Log.d("If movement detected", "dededeq");
             }
         }
     }
@@ -64,7 +66,6 @@ public class SensorListener implements SensorEventListener, Runnable {
                 e.printStackTrace();
             }
         }
-
     }
 
     public boolean getIsMoved() {
@@ -72,7 +73,7 @@ public class SensorListener implements SensorEventListener, Runnable {
     }
 
     public boolean didItMove() {
-        if ((timeMoved != null) && (timeMoved.getTime() > timeZero.getTime() + TIME_WEIGHT)) {
+        if ((timeMoved != null) && (timeMoved.getTime() > timeZero.getTime() + TIME_WAIT)) {
             return true;
         }
         else {
@@ -81,6 +82,7 @@ public class SensorListener implements SensorEventListener, Runnable {
     }
 
     public void reset() {
-
+        timeZero = new Date();
+        timeMoved = null;
     }
 }

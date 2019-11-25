@@ -48,7 +48,11 @@ public class MovementService extends IntentService {
         super.onDestroy();
     }
 
-    public void resetService() {
-        
+    public boolean didItMove() {
+        return sensorListener.didItMove();
+    }
+
+    public void reset() {
+        sensorListener.reset();
     }
 }
