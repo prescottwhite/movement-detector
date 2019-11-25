@@ -19,8 +19,7 @@
 
         <service
             android:name=".MovementService"
-            android:enabled="true"
-            android:exported="true"></service>
+            android:exported="false"></service>
     </application>
 
 </manifest>
