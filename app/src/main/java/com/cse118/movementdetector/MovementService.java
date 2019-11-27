@@ -6,6 +6,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 
+import androidx.annotation.Nullable;
+
 public class MovementService extends IntentService {
 
     private SensorListener sensorListener;
@@ -26,14 +28,25 @@ public class MovementService extends IntentService {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+    }
+
+    @Override
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "AppName:WakeLock");
+        wakeLock.acquire();
+
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             sensorListener = new SensorListener(this);
             sensorListener.run();
 
-            powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "AppName:WakeLock");
-            wakeLock.acquire();
         }
     }
 
@@ -44,12 +57,18 @@ public class MovementService extends IntentService {
 
     @Override
     public void onDestroy() {
-        wakeLock.release();
+        if (wakeLock != null) {
+            wakeLock.release();
+        }
         super.onDestroy();
     }
 
     public boolean didItMove() {
-        return sensorListener.didItMove();
+        return sensorListener.getIsMoved();
+    }
+
+    public long getFirstTimeMoved() {
+        return sensorListener.getFirstTimeMoved();
     }
 
     public void reset() {

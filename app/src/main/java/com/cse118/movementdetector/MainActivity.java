@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Date;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView mTextViewStatus;
@@ -22,7 +24,9 @@ public class MainActivity extends AppCompatActivity {
 
     private MovementService movementService;
 
-    private boolean isBound;
+    private final long TIME_WAIT = 15000;
+
+    private boolean isBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,21 +61,33 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        super.onResume();
         Intent intent = new Intent(this, MovementService.class);
-        startService(intent);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-        if (isBound == true && movementService != null) {
-            if (movementService.didItMove()) {
+        this.startService(intent);
+        this.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        if (isBound && movementService != null) {
+            Date timeNow = new Date();
+            if ((movementService.didItMove()) && (movementService.getFirstTimeMoved() != 0) && (timeNow.getTime() > movementService.getFirstTimeMoved() + TIME_WAIT)) {
                 mTextViewStatus.setText(R.string.status_moved);
             }
-            Log.d("IT MOVED", "" + movementService.didItMove());
         }
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        if (serviceConnection != null) {
+            unbindService(serviceConnection);
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override
     protected void onDestroy() {
-        unbindService(serviceConnection);
         super.onDestroy();
     }
 
@@ -81,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
             MovementService.LocalBinder localBinder = (MovementService.LocalBinder) service;
             movementService = localBinder.getService();
             isBound = true;
-            Log.d("On service connected", "conn");
         }
 
         @Override
